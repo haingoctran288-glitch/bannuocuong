@@ -6,15 +6,8 @@
         session_start();
     }
     $user = isset($_SESSION['username']) ? $_SESSION['username'] : '';
-    $sql = 'select * from Product';
-    $tacasanpham = mysqli_query($conn,$sql);
-
-
-    // 👉 Thêm đoạn PHP để lấy danh mục
-$sql_danhmuc = "SELECT category_id, name_category FROM category";
-$result_danhmuc = mysqli_query($conn, $sql_danhmuc);
-
-
+    $sql = 'select * from User';
+    $tacauser = mysqli_query($conn,$sql);
 ?>
 
 <!DOCTYPE html>
@@ -50,53 +43,51 @@ $result_danhmuc = mysqli_query($conn, $sql_danhmuc);
             <hr>
             <nav>
             <div class="list-group">
-                
                 <a class="list-group-item list-group-item-action list-group-item-dark" href="danhmuc.php">
                     <i class="bi bi-clipboard mr-2" style="font-size: 20px;"></i>Quản Lý Danh Mục
                 </a>
                 
-                <a class="list-group-item list-group-item-action list-group-item-dark" href="user.php">
-                    <i class="bi bi-person mr-2" style="font-size: 20px;"></i>Quản Lý Tài Khoản
+                <a class="list-group-item list-group-item-action list-group-item-dark" href="index.php">
+                    <i class="bi bi-box2 mr-2" style="font-size: 20px;"></i>Quản Lý Sản Phẩm
                 </a>
                 
+                <a class="list-group-item list-group-item-action list-group-item-dark" href="conments.php">
+                    <i class="bi bi-chat-text mr-2" style="font-size: 20px;"></i>Quản Lý Bình Luận
+                </a>
                 <a class="list-group-item list-group-item-action list-group-item-dark" href="donhang.php">
                     <i class="bi bi-file-text mr-2" style="font-size: 20px;"></i>Quản Lý Đơn Hàng
                 </a>
-                
-                <a class="list-group-item list-group-item-action list-group-item-dark" href="hoadon.php">
+                <a class="list-group-item list-group-item-action list-group-item-dark" href="haodon.php">
                     <i class="bi bi-file-earmark-text mr-2" style="font-size: 20px;"></i>Quản Lý Hóa Đơn
-                </a>
-                <a class="list-group-item list-group-item-action list-group-item-dark" href="conments.php">
-                    <i class="bi bi-chat-text mr-2" style="font-size: 20px;"></i>Quản Lý Bình Luận
                 </a>
             </div>
 
             </nav>
         </section>
-        <section class="col-10 bg-light" >
-         
-            <a class="btn btn-success mb-3" href="../control/index.php?chucnang=themmoi">Thêm mới</a>
+        <section class="col-10 bg-light">
+            <h2 class="mt-3">Quản lý Tài Khoản</h2>
+            <!--     -->
             <table class="table table-bordered table-hover bg-white">
                 
                 <tr class="table-active">
-                    <td>Mã SP</td>
-                    <td>Tên Sản Phẩm</td>
-                    <td>Hình Ảnh</td>
-                    <td>Giá</td>
-                    <td>Mô Tả</td>
+                    <td>Mã TK</td>
+                    <td>Tên Tài Khoản</td>
+                    <td>Email</td>
+                    <td>Só Điện Thoại</td>
+                    <td>Địa chỉ</td>
                     <td>Hành Động</td>
                 </tr>
-                <?php while ($sanpham = mysqli_fetch_assoc($tacasanpham)) { ?>
+                <?php while ($user = mysqli_fetch_assoc($tacauser)) { ?>
             <tr>
+                <td><?php echo $user['user_id']; ?></td>
+                <td><?php echo $user['username']; ?></td>
+                <td><?php echo $user['email']; ?></td>
+                <td><?php echo $user['phone_number']; ?></td>
+                <td><?php echo $user['address']; ?></td>
                 
-                <td><?php echo $sanpham['product_id']; ?></td>
-                <td><?php echo $sanpham['name_product']; ?></td>
-                <td><img src="../control/<?php echo $sanpham['address']; ?>" width="150px" height="150px;"></td>
-                <td><?php echo $sanpham['price']; ?></td>
-                <td><?php echo $sanpham['description']; ?></td>
                 <td>
-                    <a class="btn btn-info" href="../control/index.php?chucnang=sua&ma=<?php echo $sanpham['product_id']; ?>">Sửa</a>
-                    <a class="btn btn-danger" href="../control/index.php?chucnang=xoa&ma=<?php echo $sanpham['product_id']; ?>">Xóa</a>
+                  
+                    <a class="btn btn-danger" href="../control/index.php?chucnang=xoa_user&ma=<?php echo $user['user_id']; ?>">Xóa</a>
                 </td>
             </tr>
         <?php } ?>
