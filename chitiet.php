@@ -1,5 +1,31 @@
 <?php
-require_once './model/config.php'; // Đường dẫn đến file config
+// Kết nối tới cơ sở dữ liệu
+require_once('model/config.php');
+require_once('model/product.php');
+
+// Bắt đầu session
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Lấy thông tin người dùng
+$user = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username'], ENT_QUOTES, 'UTF-8') : null;
+
+// Lấy thông tin giỏ hàng
+$giohang_count = isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
+
+// Kiểm tra ID sản phẩm từ URL
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $product_id = intval($_GET['id']); // Chuyển đổi thành số nguyên
+
+    // Truy vấn cơ sở dữ liệu để lấy thông tin sản phẩm
+    $sql = "SELECT * FROM Product WHERE product_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $sanpham = $result->fetch_assoc();  
+}  
 
 
 if (session_status() == PHP_SESSION_NONE) {
@@ -15,7 +41,7 @@ if (!isset($_SESSION['cart'])) {
 // Kiểm tra nếu người dùng đã đăng nhập
 if ($user) {
     // Lấy user ID từ session
-    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+    $user_id = $_SESSION['user_id'];
 
     // Truy vấn dữ liệu giỏ hàng từ cơ sở dữ liệu nếu cần
     $cart_query = "SELECT c.cart_id, ci.cart_item_id, ci.product_id, ci.quantity, p.name_product, p.price, p.address
@@ -40,11 +66,19 @@ if ($user) {
 $giohang_count = count($cart_items);
 
 // Chạy truy vấn khác sau khi truy vấn giỏ hàng đã xong
-$sql = 'SELECT * FROM Product limit 5' ;
-$tacasanpham = mysqli_query($conn, $sql);
+$sql_comments = "SELECT c.comment_text, c.admin_reply, c.created_at, u.username 
+                 FROM comments c 
+                 JOIN User u ON c.user_id = u.user_id 
+                 WHERE c.product_id = ? 
+                 ORDER BY c.created_at DESC";
+$stmt = $conn->prepare($sql_comments);
+$stmt->bind_param("i", $product_id);
+$stmt->execute();
+$comments = $stmt->get_result();
 
 // Đừng quên đóng kết nối khi đã xong
 $conn->close();
+
 
 ?>
 
@@ -53,11 +87,11 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang chủ</title>
-   
+    <title>Compact Header Section</title>
+   <link rel="stylesheet" href="./chitiet1.css">
     <script src="./script.js"></script>
     <style>
-        .logo{
+       .logo{
             width: 100px;
             margin-right: 10px;
         }
@@ -366,113 +400,7 @@ a{
 .active, .dot:hover {   
     background-color: #717171;
 }
-.pl-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
 
-    .pl-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .pl-header h1 {
-        color: #006341;
-        font-size: 32px;
-        margin-bottom: 8px;
-    }
-
-    .pl-header p {
-        color: #666;
-        font-style: italic;
-    }
-
-    .pl-promo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 24px;
-    }
-
-    .pl-promo-card {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: transform 0.2s ease;
-    }
-
-    .pl-promo-card:hover {
-        transform: translateY(-4px);
-    }
-
-    .pl-promo-image {
-        width: 100%;
-        padding-top: 66.67%;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .pl-promo-image img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .pl-promo-details {
-        padding: 16px;
-    }
-
-    .pl-view-count {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 8px;
-        color: #666;
-        font-size: 14px;
-        margin-bottom: 12px;
-    }
-
-    .pl-view-count i {
-        font-size: 16px;
-    }
-
-    .pl-divider {
-        height: 1px;
-        background-color: #eee;
-        margin: 12px 0;
-    }
-
-    .pl-promo-title {
-        color: #333;
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 1.4;
-        margin: 0;
-        position: relative;
-        padding-left: 16px;
-    }
-
-    .pl-promo-title::before {
-        content: "-";
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-
-    @media (max-width: 768px) {
-        .pl-promo-grid {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .pl-header h1 {
-            font-size: 24px;
-        }
-    }
 
 
 
@@ -736,7 +664,7 @@ h2 {
     white-space: nowrap;
 }
 footer {
-    background-color: #e4507fff;
+    background-color: black;
     color: white;
     padding: 20px;
     font-size: 15px;
@@ -839,7 +767,7 @@ footer {
 
 /* Hover effect for the links */
 .l1 ul li a:hover {
-    color: #00693e;  /* Green color on hover */
+    color: darkorange;  /* Green color on hover */
 }
 
 /* Change background color of menu items when hovering */
@@ -863,83 +791,284 @@ footer {
 .nav-list a:hover {
     color: #FFD700; /* Màu vàng khi hover */
 }
-
-/* Thay đổi màu nền cho các nút khi hover */
-.product-card .add-to-cart:hover {
-    background-color: #FFD700; /* Màu vàng cho nút khi hover */
-}
-
-/* Thay đổi màu chữ của sản phẩm thành đen */
-.product-card h3 {
-    color: black; /* Màu đen cho tên sản phẩm */
-}
-
-/* Thay đổi màu chữ giá thành đen */
-.product-card p {
-    color: black; /* Màu đen cho giá sản phẩm */
-}
-
-/* Nút Đặt Mua */
-.btn-order:hover {
-    background-color: darkorange;
-    color: black;  /* Màu vàng cho nút khi hover */
-}
-
-/* Màu nền cho nút Đặt Mua */
-.btn-order {
-    background-color: orange; /* Màu xanh lá cây cho nút Đặt Mua */
-    color: white; /* Màu chữ trắng */
-}
-
-.search-form {
+.product-container {
     display: flex;
-    align-items: center;
-    background: #fff;
+    flex-direction: row;
+    align-items: flex-start; /* Align items to start */
+    margin: 40px 0; /* Increased margin for better separation */
+    border: 1px solid #e0e0e0; /* Light border around the container */
+    border-radius: 10px; /* Rounded corners for the container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    overflow: hidden; /* Prevent overflow of child elements */
+}
+
+.product-image {
+    flex: 1; /* Allow image section to grow */
+    padding: 20px; /* Padding around the image */
+    background-color: #f9f9f9; /* Light background for contrast */
+}
+
+.product-image img {
+    width: 100%; /* Full width for responsiveness */
+    max-width: 100%; /* Ensure it doesn't exceed the container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Rounded corners for the image */
+}
+
+.product-content {
+    flex: 2; /* Allow content section to grow more */
+    padding: 20px; /* Added padding for spacing */
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: space-between; /* Space out elements */
+    background-color: #ffffff; /* White background for content */
+}
+
+.product-info h2 {
+    font-size: 28px; /* Increased font size */
+    color: #333; /* Darker color for better readability */
+    margin-bottom: 15px; /* Space below the heading */
+}
+
+.product-info p {
+    font-size: 16px; /* Standard font size for description */
+    color: #666; /* Softer color for description */
+    margin-bottom: 20px; /* Space below the description */
+}
+
+.price-quantity {
+    display: flex;
+    justify-content: space-between; /* Space between price and quantity */
+    align-items: center; /* Center align items vertically */
+    margin: 15px 0; /* Added margin for spacing */
+}
+
+.price {
+    font-size: 24px; /* Larger font for price */
+    font-weight: bold; /* Bold for emphasis */
+    color: #006400; /* Green color for price */
+}
+
+.quantity-label {
+    font-size: 16px; /* Standard font size for quantity label */
+    color: #333; /* Darker color for better readability */
+}
+
+.add-to-cart {
+    margin-top: auto; /* Push to the bottom of the product content */
+    text-align: center; /* Center the button within the container */
+    padding: 15px; /* Add padding around the container */
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+}
+
+.add-to-cart button {
+    background-color: #006400; /* Green background */
+    color: white; /* White text */
+    padding: 12px 20px; /* Padding for the button */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size for the button text */
+    font-weight: bold; /* Bold text for emphasis */
+    cursor: pointer; /* Pointer cursor on hover */
+    border: none; /* Remove default border */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+    width: 100%; /* Full width for the button */
+}
+
+.add-to-cart button:hover {
+    background-color: #004d00; /* Darker green on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.add-to-cart button:active {
+    transform: translateY(0); /* Reset lift effect on click */
+}
+label {
+    font-size: 18px; /* Increased font size for labels */
+    color: #333; /* Darker color for better readability */
+    margin-bottom: 10px; /* Space below the label */
+    display: block; /* Make labels block elements */
+}
+
+.size-options, .sweet-options, .ice-options {
+    display: flex; /* Use flexbox for alignment */
+    gap: 20px; /* Space between options */
+    margin-bottom: 30px; /* Space below each option group */
+}
+
+.size-options label, .sweet-options label, .ice-options label {
+    display: flex; /* Align label and input in a row */
+    align-items: center; /* Center align items vertically */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: background-color 0.3s; /* Smooth background transition */
+    padding: 8px 12px; /* Padding for better clickable area */
+    border-radius: 5px; /* Rounded corners */
+}
+
+.size-options label:hover, .sweet-options label:hover, .ice-options label:hover {
+    background-color: #f0f0f0; /* Light background on hover */
+}
+
+input[type="radio"] {
+    margin-right: 8px; /* Space between radio button and label text */
+    accent-color: #006400; /* Change the color of the radio button (modern browsers) */
+}
+body {
+    font-family: Arial, sans-serif; /* Set a default font */
+    background-color: #f4f4f4; /* Light background for the body */
+    margin: 0; /* Remove default margin */
+    padding: 20px; /* Add padding around the body */
+}
+
+.product-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start; /* Align items to the start */
+    margin: 40px auto; /* Center the container with margin */
+    max-width: 1200px; /* Limit max width */
+    background-color: #ffffff; /* White background for the product container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    overflow: hidden; /* Prevent overflow of child elements */
+}
+
+.product-image {
+    flex: 1; /* Allow image section to grow */
+    padding: 20px; /* Padding around the image */
+}
+
+.product-image img {
+    width: 100%; /* Full width for responsiveness */
+    max-width: 100%; /* Ensure it doesn't exceed the container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Rounded corners for the image */
+}
+
+.product-content {
+    flex: 2; /* Allow content section to grow more */
+    padding: 20px; /* Added padding for spacing */
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+}
+
+.product-info h2 {
+    font-size: 28px; /* Increased font size */
+    color: #333; /* Darker color for better readability */
+    margin-bottom: 15px; /* Space below the heading */
+}
+
+.product-info p {
+    font-size: 16px; /* Standard font size for description */
+    color: #666; /* Softer color for description */
+    margin-bottom: 20px; /* Space below the description */
+}
+
+.price-quantity {
+    display: flex;
+    justify-content: space-between; /* Space between price and quantity */
+    margin: 15px 0; /* Added margin for spacing */
+}
+
+.price {
+    font-size: 24px; /* Larger font for price */
+    font-weight: bold; /* Bold for emphasis */
+    color: #006400; /* Green color for price */
+}
+
+label {
+    font-size: 18px; /* Increased font size for labels */
+    color: #333; /* Darker color for better readability */
+    margin-bottom: 10px; /* Space below the label */
+    display: block; /* Make labels block elements */
+}
+
+.size-options, .sweet-options, .ice-options {
+    display: flex; /* Use flexbox for alignment */
+    gap: 20px; /* Space between options */
+    margin-bottom: 30px; /* Space below each option group */
+}
+
+.size-options label, .sweet-options label, .ice-options label {
+    display: flex; /* Align label and input in a row */
+    align-items: center; /* Center align items vertically */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: background-color 0.3s; /* Smooth background transition */
+    padding: 8px 12px; /* Padding for better clickable area */
+    border-radius: 5px; /* Rounded corners */
+}
+
+.size-options label:hover, .sweet-options label:hover, .ice-options label:hover {
+    background-color: #f0f0f0; /* Light background on hover */
+}
+
+input[type="radio"] {
+    margin-right: 8px; /* Space between radio button and label text */
+    accent-color: #006400; /* Change the color of the radio button (modern browsers) */
+}
+
+.add-to-cart {
+    margin-top: auto; /* Push to the bottom of the product content */
+    text-align: center; /* Center the button within the container */
+    padding: 15px; /* Add padding around the container */
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.add-to-cart button {
+    background-color: #006400; /* Green background */
+    color: white; /* White text */
+    padding: 12px 20px; /* Padding for the button */
+    border-radius: 5px;
+}
+.comment-section {
+    margin-top: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
-    border-radius: 25px;
-    padding: 5px 10px;
-    margin-left: 20px;
-    height: 35px;
+    background-color: #f9f9f9;
 }
 
-.search-form input {
-    border: none;
-    outline: none;
-    padding: 5px 10px;
-    width: 160px;
-    font-size: 14px;
+.comment-section textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
-.search-form button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: #f5a623;
-    font-size: 16px;
+.comment-list {
+    margin-top: 20px;
 }
 
+.comment-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
 
+.comment-item p {
+    margin: 5px 0;
+}
 
-  
+.comment-item small {
+    color: gray;
+    font-size: 0.9em;
+}
 
     </style>
 </head>
 <body>
 <header class="header">
     <div class="header-left">
-        <img src="./img/logo bee.png" height="50%" width="500px;" alt="Logo" class="logo">
-        
+        <img src="../../img/logo bee.png" height="50%" width="500px;" alt="Logo" class="logo">
+        <input type="text" placeholder="Bạn muốn mua gì..." class="search-bar">
     </div>
-
-    
     
     <div class="header-right">
         <div class="icons">
-            <a href="./views/cart/cartview.php">
+            <!-- <a href="./control/index.php?chucnang=cart"> -->
             <span class="cart-count">🛒 <?php echo $giohang_count; ?></span>
             </a>
         </div>
-        
         <div class="user-greeting">
             <?php if ($user): ?>
                 <b style="position:relative; vertical-align: middle; font-weight:400; margin-top: 40px;">Xin chào - <?php echo $user; ?></b>
@@ -948,18 +1077,17 @@ footer {
         
         <div class="l1">
             <i class="icons">
-            <a href="./control/index.php?chucnang=view_profile">
-                <img src="./img/profile.png" alt="Profile Icon" class="icon">
-            </a>
-                <ul>
+            <img src="../../img/profile.png" alt="Profile Icon" class="icon">
+
+            <ul>
                     <?php if (isset($_SESSION['username'])) { ?>
-                        
-                        <li><a href="./views/Invoice/donhang.php">Đơn hàng</a></li>
-                        <li><a href="./views/Invoice/hoadon.php">Hóa đơn</a></li>
-                        <li><a href="./control/index.php?chucnang=logout">Đăng xuất</a></li>
+                        <li><a href="../../control/index.php?chucnang=view">Giỏ hàng</a></li>
+                        <li><a href="../../views/Invoice/donhang.php">Đơn hàng</a></li>
+                        <li><a href="../../views/Invoice/hoadon.php">Hóa đơn</a></li>
+                        <li><a href="../../control/index.php?chucnang=logout">Đăng xuất</a></li>
                     <?php } else { ?>
-                        <li><a href="./control/index.php?chucnang=login">Đăng nhập</a></li>
-                        <li><a href="./control/index.php?chucnang=dangki">Đăng ký</a></li>
+                        <li><a href="../../control/index.php?chucnang=login">Đăng nhập</a></li>
+                        <li><a href="../../control/index.php?chucnang=dangki">Đăng ký</a></li>
                     <?php } ?>
                 </ul>
             </i>
@@ -969,22 +1097,22 @@ footer {
 </header>
 
     <nav class="navbar">
-        <ul class="nav-list">
-            <li><a href="#">Trang Chủ</a></li>
+    <ul class="nav-list">
+            <li><a href="../../index.php">Trang Chủ</a></li>
             <li class="dropdown">
                 <a href="./views/menu/menu1.php " class="nav-link">Menu</a>  
                 <div class="dropdown-content">
                     <div class="submenu">
                         <h4>THỨC UỐNG</h4>
                         <ul>
-                            <li><a href="./views/menu/menu1.php">Trà Sữa</a></li>
-                            <li><a href="./views/menu/menu2.php">Coffe</a></li>
-                            <li><a href="./views/menu/menu3.php">Trà Hoa Quả Đặt Biệt</a></li>
-                            <li><a href="./views/menu/menu4.php">OLong</a></li>
-                            <li><a href="./views/menu/menu5.php">Sữa Tươi</a></li>
-                            <li><a href="./views/menu/menu6.php">Trà Trái Cây</a></li>
-                            <li><a href="./views/menu/menu7.php">Món Nóng</a></li>
-                            <li><a href="./views/menu/menu8.php">Đá Xay</a></li>
+                            <li><a href="../views/menu/menu1.php">Trà Sữa</a></li>
+                            <li><a href="../views/menu/menu2.php">Coffe</a></li>
+                            <li><a href="../views/menu/menu3.php">Trà Hoa Quả Đặt Biệt</a></li>
+                            <li><a href="../views/menu/menu4.php">OLong</a></li>
+                            <li><a href="../views/menu/menu5.php">Sữa Tươi</a></li>
+                            <li><a href="../views/menu/menu6.php">Trà Trái Cây</a></li>
+                            <li><a href="../views/menu/menu7.php">Món Nóng</a></li>
+                            <li><a href="../views/menu/menu8.php">Đá Xay</a></li>
                         </ul>
                     </div>
                    
@@ -996,15 +1124,15 @@ footer {
                     <div class="submenu">
                         <h4>TRÀ</h4>
                         <ul>
-                            <li><a href="./views/menu/menu9.php">Lục Trà</a></li>
-                            <li><a href="./views/menu/menu12.php">Trà OLong</a></li>
+                            <li><a href="../views/menu/menu9.php">Lục Trà</a></li>
+                            <li><a href="../views/menu/menu12.php">Trà OLong</a></li>
                         </ul>
                     </div>
                     <div class="submenu">
                         <h4>COFFEE</h4>
                         <ul>
-                            <li><a href="./views/menu/menu10.php">Cà Phê Phin</a></li>
-                            <li><a href="./views/menu/menu11.php">Cà Phê Hạt</a></li>
+                            <li><a href="../views/menu/menu10.php">Cà Phê Phin</a></li>
+                            <li><a href="../views/menu/menu11.php">Cà Phê Hạt</a></li>
                         </ul>
                     </div>
                 </div>
@@ -1014,348 +1142,118 @@ footer {
                 <div class="dropdown-content">
                     <div class="submenu">
                         <ul>
-                        <li><a href="./views/menu/menu13.php">Cà Phê </a></li>
-                        <li><a href="./views/menu/menu14.php">Trà</a></li>
-                        <li><a href="./views/menu/menu15.php">Về chúng tôi</a></li>
+                            <li>Giới thiệu về công ty</li>
+                            <li>Thư viện hình ảnh</li>
+                            <li>Liên hệ</li>
                         </ul>
 
 
             <li><a href="#">Hỗ Trợ</a></li>
-
-    <form class="search-form" action="search.php" method="GET">
-        <input type="text" name="keyword" placeholder="Tìm sản phẩm..." required>
-        <button type="submit"><i class="fa fa-search"></i></button>
-    </form> 
-
         </ul>
     </nav>
-<div class="slideshow-container">
-    <div class="mySlides slide-left">
-        <img src="./img/baner3.jpg" style="width:100%; height:500px;">
+
+<div class="product-container">
+    <div class="product-image">
+        <img src="../../control/<?php echo htmlspecialchars($sanpham['address']); ?>" alt="<?php echo htmlspecialchars($sanpham['name_product']); ?>">
+    </div>
+    <div class="product-content">
+    <div class="product-info">
+        <h2><?php echo $sanpham['name_product']; ?></h2>
+        <p>Mô tả: <?php echo $sanpham['description']; ?></p>
+        <div class="price-quantity">
+    <div class="price"><?php echo $sanpham['price']; ?> đ</div>
+</div>
+<h2>Chọn chi tiết sản phẩm</h2>
+<form action="../../control/index.php?chucnang=add" method="POST">
+    <!-- Chọn kích cỡ -->
+    <label>Chọn kích cỡ:</label>
+    <div class="size-options">
+        <label>
+            <input type="radio" name="size" value="M" required> M
+        </label>
+        <label>
+            <input type="radio" name="size" value="L" checked> L
+        </label>
+        <label>
+            <input type="radio" name="size" value="XL"> XL
+        </label>
+    </div>
+
+    <!-- Độ ngọt -->
+    <label>Chọn độ ngọt:</label>
+    <div class="sweet-options">
+        <label>
+            <input type="radio" name="sweetness" value="Ít" required> Ít
+        </label>
+        <label>
+            <input type="radio" name="sweetness" value="Bình thường" checked> Bình thường
+        </label>
+        <label>
+            <input type="radio" name="sweetness" value="Nhiều"> Nhiều
+        </label>
+    </div>
+
+    <!-- Chọn đá -->
+    <label>Chọn độ đá:</label>
+    <div class="ice-options">
+        <label>
+            <input type="radio" name="ice" value="Ít" required> Ít
+        </label>
+        <label>
+            <input type="radio" name="ice" value="Bình thường" checked> Bình thường
+        </label>
+        <label>
+            <input type="radio" name="ice" value="Nhiều"> Nhiều
+        </label>
+    </div>
+
+    <!-- Product ID (Ẩn đi) -->
+    <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+
+    <!-- Nút submit -->
+    <div class="add-to-cart">
+        <button type="submit">🛒 Thêm vào giỏ hàng</button>
+    </div>
+</form>
+
+    </div>
     </div>
     
-    <div class="mySlides slide-left">
-        <img src="img/BANNER-V1.5.jpg" style="width:100%; height:500px;">
-    </div>
-    
-    <div class="mySlides slide-left">
-        <img src="./img/baner2.jpg" style="width:100%; height:500px;">
-    </div>
 </div>
 
-<br>
+    <div class="comment-section">
+    <h3>Bình luận</h3>
+    <?php if ($user): ?>
+        <form action="conment.php" method="POST">
+            <textarea name="comment_text" rows="3" placeholder="Viết bình luận của bạn..." required></textarea>
+            <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product_id); ?>">
+            <button type="submit">Gửi bình luận</button>
+        </form>
+    <?php else: ?>
+        <p>Bạn cần <a href="../../control/index.php?chucnang=login">đăng nhập</a> để bình luận.</p>
+    <?php endif; ?>
 
-<div style="text-align:center">
-    <span class="dot" onclick="currentSlide(1)"></span> 
-    <span class="dot" onclick="currentSlide(2)"></span> 
-    <span class="dot" onclick="currentSlide(3)"></span> 
-</div>
-<section class="customer-service-section">
-    <div class="container">
-        <div class="service-item">
-            <img src="./img/customer1.png" alt="Customer Service Icon" class="service-icon">
-            <div class="service-text">
-                <p>CHĂM SÓC KHÁCH HÀNG</p>
-                <p>0962 455 517</p>
+    <div class="comment-list">
+    <h3>Các bình luận</h3>
+    <?php if ($comments->num_rows > 0): ?>
+        <?php while ($row = $comments->fetch_assoc()): ?>
+            <div class="comment-item">
+                <p><strong><?php echo $row['username']; ?>:</strong></p>
+                <p><?php echo $row['comment_text']; ?></p>
+                <?php if (!empty($row['admin_reply'])): ?>
+                    <p><strong>Phản hồi từ admin:</strong> <?php echo $row['admin_reply']; ?></p>
+                <?php else: ?>
+                    <p><em>Chưa có phản hồi từ admin.</em></p>
+                <?php endif; ?>
+                <small><?php echo $row['created_at']; ?></small>
             </div>
-        </div>
-        <div class="service-item">
-            <img src="./img/customer2.png" alt="Delivery Icon" class="service-icon">
-            <div class="service-text">
-                <p>GIAO HÀNG</p>
-                <p>Giao hàng nhanh chóng</p>
-            </div>
-        </div>
-        <div class="service-item">
-            <img src="./img/customer3.png" alt="Hotline Icon" class="service-icon">
-            <div class="service-text">
-                <p>LIÊN HỆ HOTLINE</p>
-                <p>19008021 (Miễn phí)</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<div class="content">
-    <!-- Best Seller Section -->
-    <h2>TRÀ NỔI BẬT</h2>
-    <div class="product-list">
-    <?php while ($product = mysqli_fetch_assoc($tacasanpham)) { ?>
-    <div class="product-card">
-        <div class="item">
-        <a href="./views/chitietsanpham/chitiet.php?id=<?php echo $product['product_id']; ?>">
-            <img src="./control/<?php echo $product['address']; ?>" style="margin-left: 18px;">
-        </a>
-
-        </div>
-        <div class="description">
-            <h3><?php echo ($product['name_product']); ?></h3>
-            <p><?php echo ($product['price']); ?> ₫</p>
-            <a href="./control/index.php?chucnang=add&product_id=<?php echo $product['product_id']; ?>"><button class="btn-order">🛒 Đặt mua</button></a>
-        </div>
-    </div>
-<?php } ?>
-
-</div>  
- </div>
- <div class="pl-container">
-        <div class="pl-header">
-            <h1>Tin tức & Khuyến mãi</h1>
-            <p>Tin tức & Khuyến mãi của Phúc Long</p>
-        </div>
-    
-        <div class="pl-promo-grid">
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/07/image-20250714122230.jpeg" alt="ĐẶT ĐƠN CALL CENTER - ƯU ĐÃI BẤT NGỜ">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 1159
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">ĐẶT ĐƠN CALL CENTER - ƯU ĐÃI BẤT NGỜ</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/07/screenshot_1752061167-20250709113948.png" alt="ƯU ĐÃI HỘI VIÊN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 11627
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">ƯU ĐÃI HỘI VIÊN - TẶNG COUPON MIỄN PHÍ SẢN PHẨM MỚI BST...</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/web-20250623152908.jpg" alt="ĐÓN GIÁNG SINH">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 20271
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">🎄 ĐÓN GIÁNG SINH CÙNG LY GẤU PHÚC LONG ĐỔI MÀU COOL...</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/image-20250610120045.png" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/social-post-20250603065038.jpg" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/image-20250618060412.png" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/05/dsc09757-copy-1--20250514022222.jpg" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/05/asd-20250522114927.png" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <?php
-// đọc dữ liệu JSON
-$stores = json_decode(file_get_contents('stores.json'), true);
-?>
-
-<head>
-  <meta charset="utf-8">
-  <title>Danh sách cửa hàng</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Leaflet CDN -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-  <style>
-    body { margin:0; font-family: Arial, sans-serif; }
-    header { text-align:center; padding:16px; background:#fff; border-bottom:1px solid #eee; }
-    header h2 { color:#0a8a4a; margin:0; }
-    .container { display:flex; flex-wrap:wrap; max-width:1200px; margin:0 auto; padding:16px; gap:16px; }
-    #map { flex:1 1 55%; height:700px; border-radius:6px; }
-    .list { flex:1 1 40%; border-left:1px solid #eee; padding-left:16px; max-height:700px; overflow-y:auto; }
-    .store { padding:10px 0; border-bottom:1px solid #f0f0f0; cursor:pointer; }
-    .store h3 { margin:0; color:#0a8a4a; font-size:16px; }
-    .store p { margin:4px 0; color:#555; font-size:14px; }
-    .btn-route { display:inline-block; margin-top:6px; padding:6px 10px; background:#0a8a4a; color:white; border-radius:4px; text-decoration:none; font-size:13px; }
-    .search-box { margin-bottom:12px; }
-    .search-box input { width:80%; padding:8px; border:1px solid #ccc; border-radius:4px; }
-    .gps-btn { padding:8px; border:1px solid #ccc; border-radius:4px; cursor:pointer; }
-  </style>
-</head>
-<body>
-
-<header>
-  <h2>Danh sách cửa hàng </h2>
-  <p style="color:#666">Tìm kiếm cửa hàng gần bạn</p>
-</header>
-
-<div class="container">
-  <div id="map"></div>
-  <div class="list">
-    <div class="search-box">
-      <input type="text" id="search" placeholder="Tìm cửa hàng hoặc địa chỉ...">
-      <button class="gps-btn" id="gpsBtn">📍</button>
-    </div>
-
-    <div id="storeList">
-      <?php foreach ($stores as $s): ?>
-        <div class="store" data-lat="<?= $s['lat'] ?>" data-lng="<?= $s['lng'] ?>">
-          <h3><?= htmlspecialchars($s['name']) ?></h3>
-          <p><?= htmlspecialchars($s['address']) ?></p>
-          <p>📞 <?= htmlspecialchars($s['phone']) ?></p>
-          <p>🕒 <?= $s['open_time'] ?> - <?= $s['close_time'] ?></p>
-          <a class="btn-route" target="_blank"
-             href="https://www.google.com/maps/dir/?api=1&destination=<?= $s['lat'] ?>,<?= $s['lng'] ?>">Chỉ đường</a>
-        </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p>Chưa có bình luận nào.</p>
+    <?php endif; ?>
 </div>
 
-<script>
-  // khởi tạo bản đồ
-  var map = L.map('map').setView([10.7769, 106.7009], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
-  }).addTo(map);
-
-  // load marker từ PHP
-  var stores = <?php echo json_encode($stores); ?>;
-  var markers = [];
-
-  stores.forEach(function(s) {
-    var m = L.marker([s.lat, s.lng]).addTo(map)
-      .bindPopup('<b>'+s.name+'</b><br>'+s.address+'<br>📞 '+s.phone);
-    markers.push(m);
-  });
-
-  // click vào danh sách → zoom marker
-  document.querySelectorAll('.store').forEach((el, idx) => {
-    el.addEventListener('click', () => {
-      let lat = parseFloat(el.dataset.lat), lng = parseFloat(el.dataset.lng);
-      map.setView([lat, lng], 15);
-      markers[idx].openPopup();
-    });
-  });
-
-  // tìm kiếm
-  document.getElementById('search').addEventListener('input', function() {
-    var q = this.value.toLowerCase();
-    document.querySelectorAll('.store').forEach(el => {
-      var text = el.innerText.toLowerCase();
-      el.style.display = text.includes(q) ? 'block' : 'none';
-    });
-  });
-
-  // định vị người dùng
-  document.getElementById('gpsBtn').addEventListener('click', () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        var lat = pos.coords.latitude, lng = pos.coords.longitude;
-        L.circle([lat, lng], {radius: 50}).addTo(map);
-        map.setView([lat, lng], 13);
-      }, err => alert('Không thể lấy vị trí: ' + err.message));
-    } else {
-      alert('Trình duyệt không hỗ trợ định vị.');
-    }
-  });
-</script>
-
-</body>
-
-
-
-
-
-
-<section class="partners-section">
-    <div class="container">
-        <h2>Đối tác đồng hành</h2>
-        <p>Những đơn vị uy tín mà chúng tôi đang hợp tác chung</p>
-        <div class="partners">
-            <div class="partner">
-                <img src="./img//partners1.png" alt="Grab Food">
-            </div>
-            <div class="partner">
-                <img src="./img//partners2.png" alt="Shopee Food">
-            </div>
-            <div class="partner">
-                <img src="./img//partners3.jpg" alt="Gojek">
-            </div>
-            <div class="partner">
-                <img src="./img//partners4.jpg" alt="Be">
-            </div>
-        </div>
-    </div>
-</section>
-
-
-
-
-
-
-
- <footer style=" padding: 20px; font-size: 15px; line-height: 1.6;">
+<footer style="background-color: #007a2a; color: white; padding: 20px; font-size: 15px; line-height: 1.6;">
     <div style="display: flex; flex-wrap: wrap; gap: 20px;">
       <!-- Phần địa chỉ -->
       <div style="flex: 1 1 300px; min-width: 300px;">
@@ -1430,11 +1328,10 @@ $stores = json_decode(file_get_contents('stores.json'), true);
   
    <!-- Phần cuối -->
 <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 16px;">
-    <p>© web dự án 1</p>
+    <p>© Công ty CP Phúc Long Heritage 2024</p>
     <div>
       <img src="http://online.gov.vn/Content/EndUser/LogoCCDVSaleNoti/logoSaleNoti.png" alt="Đã thông báo Bộ Công Thương" style="height: 40px; margin-right: 15px;">
-<a href="https://www.instagram.com" target="_blank" title="Instagram">
-    <img src="./img/inta.png" alt="Instagram" style="height: 30px;">
+ <img src="./img/inta.png" alt="Instagram" style="height: 30px;">
   </a>
   <a href="https://www.facebook.com" target="_blank" title="Facebook">
     <img src="./img/face.png" alt="Facebook" style="height: 30px; margin: 0 15px;">
@@ -1442,16 +1339,9 @@ $stores = json_decode(file_get_contents('stores.json'), true);
   <a href="https://www.youtube.com" target="_blank" title="YouTube">
     <img src="./img/youtube.png" alt="YouTube" style="height: 30px;">  
     </a>
-</div>
+    </div>
+  </div><script src="chitiet.js"></script>
   </footer>
-  
-  
-  
+
 </body>
-
-
-
 </html>
-
-
-        
