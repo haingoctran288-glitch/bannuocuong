@@ -1,0 +1,24 @@
+
+[
+    {
+      "id": 2,
+      "name": "CTO-CH Vincom Hung Vuong So 2 HV",
+      "address": "Vincom Hung Vuong, So 2 HP, Thoi Binh, Q. Ninh Kieu, Can Tho",
+      "phone": "(029) 2384 4444",
+      "open_time": "07:30",
+      "close_time": "22:00",
+      "lat": 10.0456789,
+      "lng": 105.7654321
+    },
+    {
+      "id": 3,
+      "name": "CTO-CH 314 Duong 30.4 P.HL Q.Ninh",
+      "address": "314 Duong 30.4, P. Hung Loi, Q. Ninh Kieu, TP. Can Tho",
+      "phone": "(029) 2378 2555",
+      "open_time": "07:00",
+      "close_time": "22:30",
+      "lat": 10.0333333,
+      "lng": 105.7833333
+    }
+  ]
+  
