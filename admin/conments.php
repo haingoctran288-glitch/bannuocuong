@@ -65,6 +65,7 @@ $comments = mysqli_query($conn, $sql);
                 </a>
                 
                 <a class="list-group-item list-group-item-action list-group-item-dark" href="hoadon.php">
+
                     <i class="bi bi-file-earmark-text mr-2" style="font-size: 20px;"></i>Quản Lý Hóa Đơn
                 </a>
             </div>

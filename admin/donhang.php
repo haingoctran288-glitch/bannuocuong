@@ -54,9 +54,7 @@ if (!$conn) {
                 <a class="list-group-item list-group-item-action list-group-item-dark" href="hoadon.php">
                     <i class="bi bi-file-earmark-text mr-2" style="font-size: 20px;"></i>Quản Lý Hóa Đơn
                 </a>
-                <a class="list-group-item list-group-item-action list-group-item-dark" href="hoadon.php">
-                    <i class="bi bi-file-text mr-2" style="font-size: 20px;"></i>Quản Lý Hóa Đơn
-                </a>
+
             </div>
             </nav>
         </section>
@@ -82,8 +80,9 @@ if (!$conn) {
                             <td><?php echo $invoice['billing_address']; ?></td>
                             <td>
                                 <a class="btn btn-success" href="invoice_detail.php?id=<?php echo $invoice['invoice_id']; ?>">Xem</a>
-                                <a class="btn btn-info" href="../control/index.php?chucnang=suadm&ma=<?php echo $invoice['invoice_id']; ?>">Sửa</a>
-                                <a class="btn btn-danger" href="../control/index.php?chucnang=xoadm&ma=<?php echo $invoice['invoice_id']; ?>">Xóa</a>
+                                <a class="btn btn-info" href="sua_donhang.php?id=<?php echo $invoice['invoice_id']; ?>">Sửa</a>
+
+                                
                             </td>
                         </tr>
                     <?php }

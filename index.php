@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once './model/config.php'; // Đường dẫn đến file config
 
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 30, 2025 lúc 02:55 PM
+-- Thời gian đã tạo: Th10 02, 2025 lúc 07:34 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -178,7 +178,8 @@ INSERT INTO `invoice` (`invoice_id`, `invoice_date`, `payment_status`, `total_am
 (123, '2025-10-27', 'Chưa Thanh Toán', 22.000, '2025-11-03', 'đasadasdad', 29, 'sdsdsadad', '1234567890', 'q21wq'),
 (124, '2025-10-27', 'Chưa Thanh Toán', 228.000, '2025-11-03', 'si pho ', 29, 'eee', '22343534534', 'ssdsadasdasda'),
 (125, '2025-10-27', 'Thanh toán thành công', 385.000, '2025-11-03', 'dvgfdhgfhfggfffffffffffffffff', 29, 'dâdaDASFASASFDAFASS', '56565646435353', 'sfsdfdsfsfsf'),
-(126, '2025-10-30', 'Chưa Thanh Toán', 1000.000, '2025-11-06', 'sài gòn', 29, 'hai123', '0901433258', 'ngonnnnn');
+(126, '2025-10-30', 'Thanh toán thành công', 1000.000, '2025-11-06', 'sài gòn', 29, 'hai123', '0901433258', 'ngonnnnn'),
+(127, '2025-11-01', 'Chưa Thanh Toán', 1548.000, '2025-11-08', 'dfsdfds', 29, 'ghhhhghgf', '4444444444', 'hc343 vv4vv ');
 
 -- --------------------------------------------------------
 
@@ -239,7 +240,8 @@ INSERT INTO `invoice_detail` (`invoice_detail_id`, `invoice_id`, `product_id`, `
 (76, 123, 33, 1, 22.000, 22.000, NULL, NULL, NULL, NULL),
 (77, 124, 16, 6, 38.000, 228.000, NULL, NULL, NULL, NULL),
 (78, 125, 39, 11, 35.000, 385.000, NULL, NULL, NULL, NULL),
-(79, 126, 53, 10, 100.000, 1000.000, NULL, NULL, NULL, NULL);
+(79, 126, 53, 10, 100.000, 1000.000, NULL, NULL, NULL, NULL),
+(80, 127, 2, 43, 36.000, 1548.000, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2412,7 +2414,8 @@ INSERT INTO `product` (`product_id`, `category_id`, `name_product`, `price`, `de
 (2211, 4, 'Sản phẩm mẫu 997', 36718.000, 'Mô tả sản phẩm mẫu', 'uploadFiles/default_997.png'),
 (2212, 3, 'Sản phẩm mẫu 998', 28206.000, 'Mô tả sản phẩm mẫu', 'uploadFiles/default_998.png'),
 (2213, 4, 'Sản phẩm mẫu 999', 25456.000, 'Mô tả sản phẩm mẫu', 'uploadFiles/default_999.png'),
-(2214, 1, 'Sản phẩm mẫu 1000', 49811.000, 'Mô tả sản phẩm mẫu', 'uploadFiles/default_1000.png');
+(2214, 1, 'Sản phẩm mẫu 1000', 49811.000, 'Mô tả sản phẩm mẫu', 'uploadFiles/default_1000.png'),
+(2215, 1, 'trà rừng số 1', 12.000, 'dấdadaa', 'uploadFiles/cute-expressions-flame-fire-minimal-art-dark-background-2560x1440-7729.png');
 
 -- --------------------------------------------------------
 
@@ -2554,7 +2557,9 @@ INSERT INTO `productdetail` (`product_detail_id`, `product_id`, `ice_level`, `sw
 (124, 8, 'Bình thường', 'Bình thường', 'L'),
 (125, 17, 'Bình thường', 'Bình thường', 'L'),
 (126, 2, 'Bình thường', 'Bình thường', 'L'),
-(127, 33, 'Bình thường', 'Bình thường', 'L');
+(127, 33, 'Bình thường', 'Bình thường', 'L'),
+(128, 2215, 'Bình thường', 'Bình thường', 'L'),
+(129, 2, 'Bình thường', 'Bình thường', 'L');
 
 -- --------------------------------------------------------
 
@@ -2720,37 +2725,37 @@ ALTER TABLE `cart`
 -- AUTO_INCREMENT cho bảng `cart_item`
 --
 ALTER TABLE `cart_item`
-  MODIFY `cart_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
+  MODIFY `cart_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
 
 --
 -- AUTO_INCREMENT cho bảng `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
 
 --
 -- AUTO_INCREMENT cho bảng `invoice_detail`
 --
 ALTER TABLE `invoice_detail`
-  MODIFY `invoice_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+  MODIFY `invoice_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT cho bảng `product`
 --
 ALTER TABLE `product`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2215;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2216;
 
 --
 -- AUTO_INCREMENT cho bảng `productdetail`
 --
 ALTER TABLE `productdetail`
-  MODIFY `product_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `product_detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
 
 --
 -- AUTO_INCREMENT cho bảng `role`

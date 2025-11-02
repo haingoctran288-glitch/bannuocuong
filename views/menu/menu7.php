@@ -850,7 +850,7 @@ footer {
                    
                 </div>
             </li>
-            <<li class="dropdown">
+            <li class="dropdown">
                 <a href="#" class="nav-link">Sản Phẩm Đóng Gói</a>
                 <div class="dropdown-content">
                     <div class="submenu">

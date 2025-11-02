@@ -430,7 +430,8 @@ if (session_status() == PHP_SESSION_NONE) {
                         </ul>
 
 
-            <li><a href="menu16.php">Hỗ Trợ</a></li>
+            <li><a href="../menu/menu16.php">Hỗ Trợ</a></li>
+
         </ul>
     </nav>
 

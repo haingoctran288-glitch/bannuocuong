@@ -51,9 +51,7 @@ if (!$conn) {
                 <a class="list-group-item list-group-item-action list-group-item-dark" href="conments.php">
                     <i class="bi bi-chat-text mr-2" style="font-size: 20px;"></i>Quản Lý Bình Luận
                 </a>
-                <a class="list-group-item list-group-item-action list-group-item-dark" href="hondon.php">
-                    <i class="bi bi-file-earmark-text mr-2" style="font-size: 20px;"></i>Quản Lý Hóa Đơn
-                </a>
+
                 <a class="list-group-item list-group-item-action list-group-item-dark" href="donhang.php">
                     <i class="bi bi-file-text mr-2" style="font-size: 20px;"></i>Quản Lý Đơn Hàng
                 </a>
@@ -87,8 +85,18 @@ if (!$conn) {
                             <td><?php echo $invoice['phone']; ?></td>
                             <td><?php echo $invoice['notes']; ?></td>
                             <td>
-                                <a class="btn btn-info" href="../control/index.php?chucnang=suadm&ma=<?php echo $invoice['invoice_id']; ?>">Sửa</a>
-                                <a class="btn btn-danger" href="../control/index.php?chucnang=xoadm&ma=<?php echo $invoice['invoice_id']; ?>">Xóa</a>
+                                <a class="btn btn-info" href="sua_hoadon.php?id=<?php echo $invoice['invoice_id']; ?>">Sửa</a>
+                                
+                                
+                                
+                                <a class="btn btn-danger"
+   href="delete_invoice.php?id=<?php echo $invoice['invoice_id']; ?>"
+   onclick="return confirm('Bạn có chắc chắn muốn xóa hóa đơn này không?');">
+   Xóa
+</a>
+
+                            
+                            
                             </td>
                         </tr>
                     <?php }
