@@ -14,7 +14,7 @@ $user_id = $_SESSION['user_id'];
 $invoice_id = isset($_GET['invoice_id']) ? $_GET['invoice_id'] : null;
 
 if (!$invoice_id) {
-    echo "Lỗi: Mã đơn hàng không hợp lệ.";
+    echo "❌ Lỗi: Mã đơn hàng không hợp lệ.";
     exit;
 }
 
@@ -31,15 +31,22 @@ $invoice = $result->fetch_assoc();
 $stmt->close();
 
 if (!$invoice) {
-    echo "Không tìm thấy hóa đơn.";
+    echo "❌ Không tìm thấy hóa đơn.";
     exit;
 }
 
 // ======================
 // 🔹 Chuẩn hóa số tiền
 // ======================
-$tongTien = preg_replace('/\D+/', '', $invoice['total_amount']);
-$tongTien = intval($tongTien);
+$tongTien = floatval(preg_replace('/[^0-9.]/', '', $invoice['total_amount']));
+$amount = intval(round($tongTien));
+
+if ($amount < 1000) {
+    die("<p style='color:red;text-align:center;'>⚠️ Số tiền quá nhỏ. Tối thiểu 1,000 VND để thanh toán qua MoMo.</p>");
+}
+if ($amount > 50000000) {
+    die("<p style='color:red;text-align:center;'>⚠️ Số tiền vượt quá 50,000,000 VND mà MoMo cho phép.</p>");
+}
 
 // ======================
 // 🔁 HÀM TẠO URL THANH TOÁN MOMO
@@ -53,10 +60,7 @@ function generateMoMoURL($invoice_id, $amount)
     $redirectUrl = "http://localhost/ChuyenDeThucTap/views/Invoice/thanhtoan_success.php";
     $ipnUrl = "http://localhost/ChuyenDeThucTap/views/Invoice/thanhtoan_ipn.php";
 
-    // 🔸 Tạo orderId duy nhất (tránh trùng lặp)
     $orderId = "HD" . $invoice_id . "_" . time();
-
-    // 🔸 Dữ liệu cần thiết
     $orderInfo = "Thanh toán hóa đơn #" . $invoice_id;
     $requestId = time() . "";
     $requestType = "captureWallet";
@@ -108,11 +112,11 @@ function generateMoMoURL($invoice_id, $amount)
 
     $response = json_decode($result, true);
 
-    // 🔸 Kiểm tra phản hồi
+    // 🔸 Kiểm tra phản hồi từ MoMo
     if (isset($response['payUrl'])) {
         return $response['payUrl'];
     } else {
-        echo "<pre style='color:red;'>LỖI MoMo:\n";
+        echo "<pre style='color:red;background:#ffeaea;padding:10px;border-radius:5px;'>⚠️ LỖI MoMo:\n";
         print_r($response);
         echo "</pre>";
         return null;
@@ -122,7 +126,7 @@ function generateMoMoURL($invoice_id, $amount)
 // ======================
 // 🔹 Tạo URL QR MoMo
 // ======================
-$qr_url = generateMoMoURL($invoice_id, $tongTien);
+$qr_url = generateMoMoURL($invoice_id, $amount);
 
 // ======================
 // 💵 XỬ LÝ THANH TOÁN TIỀN MẶT
@@ -131,9 +135,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && 
     $stmt = $conn->prepare("UPDATE Invoice SET payment_status = 'Thanh toán thành công' WHERE invoice_id = ? AND user_id = ?");
     $stmt->bind_param("ii", $invoice_id, $user_id);
     if ($stmt->execute()) {
-        echo "<script>alert('Thanh toán tiền mặt thành công!'); window.location.href = 'hoadon.php';</script>";
+        echo "<script>alert('✅ Thanh toán tiền mặt thành công!'); window.location.href = 'hoadon.php';</script>";
     } else {
-        echo "<script>alert('Lỗi khi cập nhật trạng thái thanh toán.');</script>";
+        echo "<script>alert('❌ Lỗi khi cập nhật trạng thái thanh toán.');</script>";
     }
     $stmt->close();
     $conn->close();
@@ -151,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && 
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f9f9f9;
+            background-color: #f8fafc;
             color: #333;
         }
         h1 {
@@ -163,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && 
             text-align: center;
             font-size: 16px;
         }
-        button {
+        .btn {
             background-color: #a50064;
             color: white;
             border: none;
@@ -172,8 +176,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && 
             font-size: 16px;
             padding: 10px 20px;
             margin: 5px;
+            transition: background-color 0.2s;
         }
-        button:hover {
+        .btn:hover {
             background-color: #88004f;
         }
         img {
@@ -193,10 +198,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && 
     <h1>Thanh toán hóa đơn</h1>
     <p>Chọn phương thức thanh toán:</p>
     <div style="text-align: center; margin-bottom: 20px;">
-        <button onclick="showQRCode()">Thanh toán QR Code</button>
+        <button class="btn" onclick="showQRCode()">Thanh toán bằng MoMo (QR)</button>
         <form method="POST" style="display: inline;">
             <input type="hidden" name="payment_method" value="cash">
-            <button type="submit">Thanh toán Tiền mặt</button>
+            <button type="submit" class="btn">Thanh toán tiền mặt</button>
         </form>
     </div>
 
@@ -205,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_method']) && 
             <a href="<?php echo $qr_url; ?>" target="_blank">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?data=<?php echo urlencode($qr_url); ?>&size=200x200" alt="MoMo QR Code">
             </a>
-            <p>Quét mã QR để thanh toán qua <b>MoMo</b>.</p>
+            <p>📱 Quét mã QR để thanh toán qua <b>MoMo</b>.</p>
         <?php else: ?>
             <p style="color:red;">Không tạo được QR MoMo. Vui lòng thử lại.</p>
         <?php endif; ?>

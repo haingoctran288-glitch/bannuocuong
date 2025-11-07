@@ -563,10 +563,16 @@
                                                     $phone = $_POST['phone'];
                                                     $notes = isset($_POST['notes']) ? $_POST['notes'] : null;
                                                 
-                                                    // Tính tổng tiền từ giỏ hàng
-                                                    $total_amount = array_sum(array_map(function ($item) {
-                                                        return $item['quantity'] * $item['price'];
+                                                    // Nếu có tổng sau giảm trong session, dùng giá đó
+                                                    if (isset($_SESSION['total']) && $_SESSION['total'] > 0) {
+                                                        $total_amount = $_SESSION['total'];
+                                                    } else {
+                                                    // fallback: tính tổng gốc nếu chưa có giảm giá
+                                                        $total_amount = array_sum(array_map(function ($item) {
+                                                    return $item['quantity'] * $item['price'];
                                                     }, $_SESSION['cart']));
+                                                    }
+
                                                 
                                                     // Thêm hóa đơn vào bảng Invoice
                                                     $stmt = $conn->prepare("INSERT INTO Invoice (invoice_date, payment_status, total_amount, due_date, billing_address, user_id, recipient_name, phone, notes)

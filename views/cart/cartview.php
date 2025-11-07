@@ -343,7 +343,7 @@ if (session_status() == PHP_SESSION_NONE) {
      <header class="header">
     <div class="header-left">
         <img src="../../img/logo bee.png" height="50%" alt="Logo" class="logo">
-        <input type="text" placeholder="Bạn muốn mua gì..." class="search-bar">
+
     </div>
     
     <div class="header-right">

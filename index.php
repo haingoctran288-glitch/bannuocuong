@@ -1539,117 +1539,72 @@ footer {
 
         
  <div class="pl-container">
-        <div class="pl-header">
-            <h1>Tin tức & Khuyến mãi</h1>
-            <p>Tin tức & Khuyến mãi </p>
-        </div>
-    
-        <div class="pl-promo-grid">
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/07/image-20250714122230.jpeg" alt="ĐẶT ĐƠN CALL CENTER - ƯU ĐÃI BẤT NGỜ">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 1159
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">ĐẶT ĐƠN CALL CENTER - ƯU ĐÃI BẤT NGỜ</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/07/screenshot_1752061167-20250709113948.png" alt="ƯU ĐÃI HỘI VIÊN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 11627
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">ƯU ĐÃI HỘI VIÊN - TẶNG COUPON MIỄN PHÍ SẢN PHẨM MỚI BST...</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/web-20250623152908.jpg" alt="ĐÓN GIÁNG SINH">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 20271
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">🎄 ĐÓN GIÁNG SINH CÙNG LY GẤU PHÚC LONG ĐỔI MÀU COOL...</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/image-20250610120045.png" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/social-post-20250603065038.jpg" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/06/image-20250618060412.png" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/05/dsc09757-copy-1--20250514022222.jpg" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-    
-            <div class="pl-promo-card">
-                <div class="pl-promo-image">
-                    <img src="https://s3-hcmc02.higiocloud.vn/phuclong/2025/05/asd-20250522114927.png" alt="HAPPY HALLOWEEN">
-                </div>
-                <div class="pl-promo-details">
-                    <div class="pl-view-count">
-                        <i>👁</i> 3742
-                    </div>
-                    <div class="pl-divider"></div>
-                    <h3 class="pl-promo-title">HAPPY HALLOWEEN - TẶNG COUPON MUA 1 TẶNG 1</h3>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="pl-header">
+      <h1>Tin tức & Khuyến mãi</h1>
+      <p>Tin tức & Khuyến mãi</p>
+  </div>
+
+  <div class="pl-promo-grid">
+
+      <!-- Bài viết 1 -->
+      <a href="khuyenmai_detail.php?id=1" class="pl-promo-card" style="text-decoration:none; color:inherit;">
+          <div class="pl-promo-image">
+              <img src="uploadFiles/ChatGPT Image 12_06_13 7 thg 11, 2025.png" alt="TÀI KHOẢN MỚI ĐƯỢC GIẢM 20%">
+          </div>
+          <div class="pl-promo-details">
+              <div class="pl-view-count">
+                  <i>👁</i> 112159
+              </div>
+              <div class="pl-divider"></div>
+              <h3 class="pl-promo-title">🆕 TÀI KHOẢN MỚI ĐƯỢC GIẢM 20% CHO ĐƠN HÀNG ĐẦU TIÊN 🤑</h3>
+          </div>
+      </a>
+
+      <!-- Bài viết 2 -->
+      <a href="khuyenmai_detail.php?id=2" class="pl-promo-card" style="text-decoration:none; color:inherit;">
+          <div class="pl-promo-image">
+              <img src="uploadFiles/14902476-bb20-4d3d-bdb1-a55382ea4299.png" alt="ƯU ĐÃI TƯNG BỪNG GIẢM ĐẾN 10%">
+          </div>
+          <div class="pl-promo-details">
+              <div class="pl-view-count">
+                  <i>👁</i> 65788
+              </div>
+              <div class="pl-divider"></div>
+              <h3 class="pl-promo-title">🔥 ƯU ĐÃI TƯNG BỪNG GIẢM ĐẾN 10% CHO ĐƠN HÀNG TỪ 149K TRỞ LÊN 💥</h3>
+          </div>
+      </a>
+
+      <!-- Bài viết 3 -->
+      <a href="khuyenmai_detail.php?id=3" class="pl-promo-card" style="text-decoration:none; color:inherit;">
+          <div class="pl-promo-image">
+              <img src="uploadFiles/a819da63-8665-4ed8-888a-67202538f1e1.png" alt="GIÁNG SINH">
+          </div>
+          <div class="pl-promo-details">
+              <div class="pl-view-count">
+                  <i>👁</i> 20271
+              </div>
+              <div class="pl-divider"></div>
+              <h3 class="pl-promo-title">🎄 TẬN HƯỞNG GIÁNG SINH CÙNG BEE TEA AND COFFEE 🎅</h3>
+          </div>
+      </a>
+
+      <!-- Bài viết 4 -->
+      <a href="khuyenmai_detail.php?id=4" class="pl-promo-card" style="text-decoration:none; color:inherit;">
+          <div class="pl-promo-image">
+              <img src="uploadFiles/aa0d8659-1086-4e08-8765-9d595d9963d1.png" alt="HALLOWEEN">
+          </div>
+          <div class="pl-promo-details">
+              <div class="pl-view-count">
+                  <i>👁</i> 31742
+              </div>
+              <div class="pl-divider"></div>
+              <h3 class="pl-promo-title">🎃 HAPPY HALLOWEEN CÙNG BEE TEA AND COFFEE NÀO 🕷️</h3>
+          </div>
+      </a>
+
+  </div>
+</div>
+
 
 
 
